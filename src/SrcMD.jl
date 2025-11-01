@@ -86,12 +86,17 @@ const ext_lang = (
     wasm = "wasm",
     xml = "xml",
     yml = "yaml",
-    zig = "zig"
+    zig = "zig",
 )
 
 "regular expression matching source code files based on their extensions"
-const src_file_regex = Regex("\\.(" * join(string.(keys(ext_lang)), '|') * ")\$")
+const src_file_regex = Regex("[^/]\\.(" * join(string.(keys(ext_lang)), '|') * ")\$")
 
+code_block_template = mt"""
+```{{lang}}
+{{code}}
+```
+"""
 
 function src_files_tree(
   dir::String,
