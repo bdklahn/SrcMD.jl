@@ -109,7 +109,7 @@ end
 
 function write_md_file(
   indir::String,
-  outdir::String=indir;
+  outdir::String=normpath(joinpath(indir, "../"));
   src_file_regex::Regex=src_file_regex,
 )
     t = src_files_tree(indir; src_file_regex=src_file_regex)
