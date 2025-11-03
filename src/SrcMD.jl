@@ -116,8 +116,8 @@ function write_md_file(
     md_fpath = joinpath(outdir, splitpath(t.name)[end] * ".md")
     rm(md_fpath; force=true)
     FileTrees.map(t; walk=FileTrees.prewalk) do n
+      p = path(n)
       if isdir(path(n))
-          p = path(n)
           dir = relpath(p, t.name)
           # dir = dir == "." ? "/" : dir
           heading = "#" ^ (length(splitpath(dir))) * " directory: $(dir) \n\n"
@@ -126,7 +126,7 @@ function write_md_file(
             write(io, heading)
           end
       else
-          ext = splitext(path(n))[2][2:end]  # get extension without dot
+          ext = splitext(p)[2][2:end]  # get extension without dot
           # lang = get(ext_lang, Symbol(ext), "plaintext")
           # code = get(n)
           d = Dict(
@@ -143,7 +143,5 @@ function write_md_file(
     end
     md_fpath
 end
-# length.(splitpath.(relpath.(path.(files(t1)), t1.name)))
-# open(io -> write(io, open("source.txt")), "destination.txt", "a")
 
 end # module SrcMD
