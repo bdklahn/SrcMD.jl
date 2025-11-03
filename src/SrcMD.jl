@@ -117,18 +117,14 @@ function write_md_file(
     rm(md_fpath; force=true)
     FileTrees.map(t; walk=FileTrees.prewalk) do n
       p = path(n)
-      if isdir(path(n))
+      if isdir(p)
           dir = relpath(p, t.name)
-          # dir = dir == "." ? "/" : dir
-          heading = "#" ^ (length(splitpath(dir))) * " directory: $(dir) \n\n"
-          # ext = splitext(fp)[2][2:end]  # get extension without dot
+          heading = "#" ^ (length(splitpath(dir))) * " directory: $(dir)\n\n"
           open(md_fpath, "a") do io
             write(io, heading)
           end
       else
           ext = splitext(p)[2][2:end]  # get extension without dot
-          # lang = get(ext_lang, Symbol(ext), "plaintext")
-          # code = get(n)
           d = Dict(
               "name" => name(n),
               "lang" => get(ext_lang, Symbol(ext), "plaintext"),
