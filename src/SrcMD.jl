@@ -118,7 +118,7 @@ function write_md_file(
     FileTrees.map(t; walk=FileTrees.prewalk) do n
       p = path(n)
       if isdir(p)
-          dir = relpath(p, t.name)
+          dir = relpath(p, dirname(t.name))
           heading = "#" ^ (length(splitpath(dir))) * " directory: $(dir)\n\n"
           open(md_fpath, "a") do io
             write(io, heading)
