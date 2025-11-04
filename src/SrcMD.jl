@@ -113,7 +113,7 @@ function write_md_file(
   src_file_regex::Regex=src_file_regex,
 )
     t = src_files_tree(indir; src_file_regex=src_file_regex)
-    md_fpath = joinpath(outdir, splitpath(t.name)[end] * ".md")
+    md_fpath = joinpath(outdir, basename(t.name) * ".md")
     rm(md_fpath; force=true)
     FileTrees.map(t; walk=FileTrees.prewalk) do n
       p = path(n)
