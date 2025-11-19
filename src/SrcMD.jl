@@ -219,8 +219,9 @@ function get_github_token(app_name::String="SrcMD")
         chmod(config_file, 0o600) # Read/Write for user only
     end
 
-    println("Token saved securely to: $config_file")
     return token
 end
+
+
 
 end # module SrcMD
