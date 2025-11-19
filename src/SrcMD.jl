@@ -5,6 +5,8 @@ using Mustache
 using BaseDirs
 using Base: getpass
 using TOML
+using HTTP
+using JSON3
 
 export  src_files_tree
 export  write_md_file
@@ -223,5 +225,69 @@ function get_github_token(app_name::String="SrcMD")
 end
 
 
+
+const GITHUB_API_URL = "https://api.github.com/graphql"
+
+# The universal query using 'repositoryOwner'
+const universal_query = """
+query(\$owner: String!, \$cursor: String) {
+  repositoryOwner(login: \$owner) {
+    login
+    repositories(first: 100, after: \$cursor, orderBy: {field: STARGAZERS, direction: DESC}) {
+      nodes {
+        name
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+"""
+
+function owner_repo_names(owner_name::String)
+    println("--- Fetching repositories for: $owner_name ---")
+    headers = [
+      "Authorization" => "bearer $(get_github_token())",
+        "Content-Type" => "application/json"
+    ]
+    all_repos = []
+    hasNextPage = true
+    cursor = nothing
+
+    while hasNextPage
+        # We now pass BOTH the owner and the cursor
+        vars = Dict(
+            "owner" => owner_name,
+            "cursor" => cursor
+        )
+        body = JSON3.write(Dict("query" => universal_query, "variables" => vars))
+
+        try
+            response = HTTP.post(GITHUB_API_URL, headers, body)
+            data = JSON3.read(response.body)
+            # Error handling: Check if the owner exists
+            if data.data.repositoryOwner === nothing
+                println("❌ Error: Owner '$owner_name' not found.")
+                return []
+            end
+
+            repo_data = data.data.repositoryOwner.repositories
+            append!(all_repos, repo_data.nodes)
+            hasNextPage = repo_data.pageInfo.hasNextPage
+            cursor = repo_data.pageInfo.endCursor
+
+            print(".") # Progress indicator
+
+        catch e
+            @warn "❌ Network or Parsing Error: $e"
+            return all_repos
+        end
+    end
+
+    @info "✅ Finished! Found $(length(all_repos)) repositories."
+    return [i.name for i in all_repos]
+end
 
 end # module SrcMD
