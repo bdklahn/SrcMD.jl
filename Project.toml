@@ -9,7 +9,6 @@ FileTrees = "72696420-646e-6120-6e77-6f6420746567"
 Git = "d7ba0133-e1db-5d97-8f8c-041e4b3a1eb2"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-Mustache = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
 TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
@@ -18,7 +17,6 @@ FileTrees = "0.3.10"
 Git = "1.5.0"
 HTTP = "1.10.19"
 JSON3 = "1.14.3"
-Mustache = "1.0.21"
 TOML = "1.0.3"
 julia = "1.12"
 

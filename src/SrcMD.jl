@@ -1,7 +1,6 @@
 module SrcMD
 
 using FileTrees
-using Mustache
 using BaseDirs
 using Base: getpass
 using TOML
@@ -99,13 +98,6 @@ const ext_lang = (
 "regular expression matching source code files based on their extensions"
 const src_file_regex = Regex("[^/]\\.(" * join(string.(keys(ext_lang)), '|') * ")\$")
 
-code_block_template = mt"""
-file: {{{name}}}
-```{{{lang}}}
-{{{code}}}
-```
-"""
-
 function src_files_tree(
   dir::String;
   src_file_regex::Regex=src_file_regex,
@@ -131,12 +123,14 @@ function write_md_file(
           end
       else
           ext = splitext(p)[2][2:end]  # get extension without dot
-          d = Dict(
-              "name" => name(n),
-              "lang" => get(ext_lang, Symbol(ext), "plaintext"),
-              "code" => get(n),
-          )
-          code_block = Mustache.render(code_block_template, d)
+
+          code_block = """
+          file: $(name(n))
+          ```$(get(ext_lang, Symbol(ext), "plaintext"))
+          $(get(n))
+          ```
+          """
+
           open(md_fpath, "a") do io
             write(io, code_block * "\n\n")
           end
