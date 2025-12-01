@@ -7,6 +7,7 @@ using Base: getpass
 using TOML
 using HTTP
 using JSON3
+using Git
 
 export  src_files_tree
 export  write_md_file
@@ -246,8 +247,12 @@ query(\$owner: String!, \$cursor: String) {
 }
 """
 
-function owner_repo_names(owner_name::String)
+function owner_repo_names(
+  owner_name::String="",
+  repopattern::Regex=r".*",
+)
     println("--- Fetching repositories for: $owner_name ---")
+    @assert !isempty(owner_name) "Owner name cannot be empty."
     headers = [
       "Authorization" => "bearer $(get_github_token())",
         "Content-Type" => "application/json"
@@ -286,8 +291,9 @@ function owner_repo_names(owner_name::String)
         end
     end
 
+    all_repos = [i.name for i in all_repos if !isnothing(match(repopattern, i.name))]
     @info "✅ Finished! Found $(length(all_repos)) repositories."
-    return [i.name for i in all_repos]
+    all_repos
 end
 
 end # module SrcMD
