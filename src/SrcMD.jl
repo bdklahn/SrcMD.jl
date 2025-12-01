@@ -102,7 +102,10 @@ function src_files_tree(
   dir::String;
   src_file_regex::Regex=src_file_regex,
 )
-    FileTrees.load(f->read(path(f), String), FileTree(dir)[src_file_regex])
+    FileTrees.load(FileTree(dir)[src_file_regex]) do f
+        p = path(f)
+	      islink(p) ? readlink(p) : read(p, String)
+    end
 end
 
 function write_md_file(
